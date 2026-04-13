@@ -1,43 +1,40 @@
 import time
 
 
-def func_inf(func):
-    def wrapper(data):
-
-
+def func_information(func):
+    def wrapper(*args, **kwargs):
         print("\n--- Функция ---")
-        print(f"Входные данные: {data}")
+        print(f"Функция {func.__name__} Входные данные: {args, kwargs}")
         print("-" * 30)
 
         start_time = time.perf_counter()
-
-        print(f"Результат работы: {func(data)}"2)
-
+        data = func(*args, **kwargs)
         end_time = time.perf_counter()
-        print(f"Функция {func.__name__} работала: {end_time - start_time:} сек.")
+        print(f"Результат работы: {data} \nработала: {end_time - start_time:} сек.")
+
+
 
     return wrapper
 
 
 
-@func_inf
+@func_information
 def task_01(data) :
-    x = data
-    x_str=str(x)
-    return (x_str[len(x_str)-1])
+    data_str=str(data)
+    return (data_str[len(data_str)-1])
 
-@func_inf
+@func_information
 def task_02(data):
     x = data
     return (len(str(x)))
 
-@func_inf
+@func_information
 def task_03(data):
     s = data
     if(len(s)>1):
         return (s[len(s)-2])
 
-@func_inf
+@func_information
 def task_04(data):
     a = int(data[0])
     b = int(data[1])
@@ -47,7 +44,7 @@ def task_04(data):
         my_list.append(i)
     return my_list
 
-@func_inf
+@func_information
 def task_05(data):
     summ = 0
     my_list = data
@@ -56,34 +53,28 @@ def task_05(data):
             summ +=int(i)
     return summ
 
-@func_inf
+@func_information
 def task_06(data):
     s1 = data[0]
     s2 = data[1]
-    if(s2.find(s1)==-1):
-        return "FASLE"
-    else:
-        return "TRUE"       #TRUE в случае если find нашёл s1 в s2
+    ans = s2.find(s1) == -1
+    return ans      #TRUE в случае если find нашёл s1 в s2
 
-@func_inf
+@func_information
 def task_07(data):
-    my_list = data
-    for s in my_list :
-        if s.find("https://") != 0 :
-            my_list.remove(s)
-    return my_list
+    new_list = [s for s in data if s.find("https://") == 0]
+    return new_list
 
-@func_inf
+@func_information
 def task_08(data):
     s = data
-    return "ind == ",s.find('0')+1
+    return "ind == ",s.find('0')
 
-@func_inf
+@func_information
 def task_09_1(data):
-    my_list = data
     ans = 0
 
-    for num in my_list:
+    for num in data:
         try:
             if (int(num) < 0):
                 ans += 1
@@ -91,7 +82,7 @@ def task_09_1(data):
             continue
     return ans
 
-@func_inf
+@func_information
 def task_09_2(data):
     my_list = data
     ans = 0
@@ -101,7 +92,7 @@ def task_09_2(data):
             ans+=1
     return ans
 
-@func_inf
+@func_information
 def task_10(data):
     my_list1 = data[0]
     my_list2 = data[1]
@@ -132,15 +123,6 @@ data = [100000005, 1092384345, "qwezf124r2344 wer990rt", [2, 101, 2], [1, 2, 3, 
 
 
 for i in range(len(data)):
-
     print("\n",task_list[i])
-
     data_cont = data[i]
-
     menu[i](data_cont)
-
-
-
-
-
-

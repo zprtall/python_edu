@@ -138,23 +138,45 @@ task_list = ["1. Дано число. Выведите в консоль пос�
 #         menu[i](data_item)
 
 
+# 2 вариант
+# tasks = [
+#     (task_01, 100000005, 0),
+#     (task_02, 1092384345, 1),
+#     (task_03, "qwezf124r2344 wer990rt", 2),
+#     (task_04, (2, 101, 2), 3),
+#     (task_05, [1, 2, 3, 4, -5, 0, 23, -123], 4),
+#     (task_06, ("12", "qwertysdga434asd21wer12sdfsa"), 5),
+#     (task_07, ["123444", "https://web.telegram.org/", "qwerty", "https://www.youtube.com/watch?v=REQfiT1qvGQ", "https://habr.com/"], 6),
+#     (task_08, "qwertysdga430asd21wer12sdfsa", 7),
+#     (task_09_1, [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148], 8),
+#     (task_09_2, [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148], 9),
+#     (task_10, ([1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148],
+#                [1, "qwert", 148, "titi", 'q', "90", -3, 48, -234]), 10)
+# ]
+#
+# for func, args, idx in tasks:
+#     print("\n", task_list[idx])
+#     if isinstance(args, tuple):
+#         func(*args)
+#     else:
+#         func(args)
 
-tasks = [
-    (task_01, 100000005, 0),
-    (task_02, 1092384345, 1),
-    (task_03, "qwezf124r2344 wer990rt", 2),
-    (task_04, (2, 101, 2), 3),
-    (task_05, [1, 2, 3, 4, -5, 0, 23, -123], 4),
-    (task_06, ("12", "qwertysdga434asd21wer12sdfsa"), 5),
-    (task_07, ["123444", "https://web.telegram.org/", "qwerty", "https://www.youtube.com/watch?v=REQfiT1qvGQ", "https://habr.com/"], 6),
-    (task_08, "qwertysdga430asd21wer12sdfsa", 7),
-    (task_09_1, [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148], 8),
-    (task_09_2, [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148], 9),
-    (task_10, ([1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148],
-               [1, "qwert", 148, "titi", 'q', "90", -3, 48, -234]), 10)
-]
+tasks_config = {
+    0: (task_01, 100000005),
+    1: (task_02, 1092384345),
+    2: (task_03, "qwezf124r2344 wer990rt"),
+    3: (task_04, (2, 101, 2)),
+    4: (task_05, [1, 2, 3, 4, -5, 0, 23, -123]),
+    5: (task_06, ("12", "qwertysdga434asd21wer12sdfsa")),
+    6: (task_07, ["123444", "https://web.telegram.org/", "qwerty", "https://www.youtube.com/watch?v=REQfiT1qvGQ", "https://habr.com/"]),
+    7: (task_08, "qwertysdga430asd21wer12sdfsa"),
+    8: (task_09_1, [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148]),
+    9: (task_09_2, [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148]),
+    10: (task_10, ([1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148],
+                   [1, "qwert", 148, "titi", 'q', "90", -3, 48, -234]))
+}
 
-for func, args, idx in tasks:
+for idx, (func, args) in tasks_config.items():
     print("\n", task_list[idx])
     if isinstance(args, tuple):
         func(*args)

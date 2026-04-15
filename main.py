@@ -35,12 +35,9 @@ def task_03(data):
         return (s[len(s)-2])
 
 @func_information
-def task_04(data):
-    a = int(data[0])
-    b = int(data[1])
-    c = int(data[2])
+def task_04(a, b, c):
     my_list = list()
-    for i in range(a,b,c):
+    for i in range(a, b, c):
         my_list.append(i)
     return my_list
 
@@ -54,11 +51,9 @@ def task_05(data):
     return summ
 
 @func_information
-def task_06(data):
-    s1 = data[0]
-    s2 = data[1]
+def task_06(s1, s2):
     ans = s2.find(s1) == -1
-    return ans      #TRUE в случае если find нашёл s1 в s2
+    return ans
 
 @func_information
 def task_07(data):
@@ -93,12 +88,10 @@ def task_09_2(data):
     return ans
 
 @func_information
-def task_10(data):
-    my_list1 = data[0]
-    my_list2 = data[1]
+def task_10(list1, list2):
     ans_list = []
-    for s1 in my_list1:
-        for s2 in my_list2:
+    for s1 in list1:
+        for s2 in list2:
             if s1 == s2:
                 ans_list.append(s1)
     return ans_list
@@ -116,13 +109,54 @@ task_list = ["1. Дано число. Выведите в консоль пос�
         "10. Дан список с числами. Подсчитайте количество отрицательных чисел в этом списке. второй способ",
         "11. Дано 2 списка. Найдите все элементы, которые есть в обоих списках"]
 
-data = [100000005, 1092384345, "qwezf124r2344 wer990rt", [2, 101, 2], [1, 2, 3, 4, -5, 0, 23, -123], ["12", "qwertysdga434asd21wer12sdfsa"],
-        ["123444", "https://web.telegram.org/", "qwerty", "https://www.youtube.com/watch?v=REQfiT1qvGQ", "https://habr.com/"], "qwertysdga430asd21wer12sdfsa",
-        [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148], [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148],
-        [[1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148], [1, "qwert", 148, "titi", 'q', "90", -3, 48, -234]]]
+# первый способ
+# data = [
+#     100000005,
+#     1092384345,
+#     "qwezf124r2344 wer990rt",
+#     (2, 101, 2),
+#     [1, 2, 3, 4, -5, 0, 23, -123],
+#     ("12", "qwertysdga434asd21wer12sdfsa"),
+#     ["123444", "https://web.telegram.org/", "qwerty", "https://www.youtube.com/watch?v=REQfiT1qvGQ",
+#      "https://habr.com/"],
+#     "qwertysdga430asd21wer12sdfsa",
+#     [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148],
+#     [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148],
+#     ([1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148],
+#      [1, "qwert", 148, "titi", 'q', "90", -3, 48, -234])
+# ]
+#
+#
+# for i in range(len(menu)):
+#     print("\n", task_list[i])
+#     data_item = data[i]
+#
+#
+#     if isinstance(data_item, tuple):
+#         menu[i](*data_item)
+#     else:
+#         menu[i](data_item)
 
 
-for i in range(len(data)):
-    print("\n",task_list[i])
-    data_cont = data[i]
-    menu[i](data_cont)
+
+tasks = [
+    (task_01, 100000005, 0),
+    (task_02, 1092384345, 1),
+    (task_03, "qwezf124r2344 wer990rt", 2),
+    (task_04, (2, 101, 2), 3),
+    (task_05, [1, 2, 3, 4, -5, 0, 23, -123], 4),
+    (task_06, ("12", "qwertysdga434asd21wer12sdfsa"), 5),
+    (task_07, ["123444", "https://web.telegram.org/", "qwerty", "https://www.youtube.com/watch?v=REQfiT1qvGQ", "https://habr.com/"], 6),
+    (task_08, "qwertysdga430asd21wer12sdfsa", 7),
+    (task_09_1, [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148], 8),
+    (task_09_2, [1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148], 9),
+    (task_10, ([1, 2, 3, 4, 5, -3, 3, -2, 13, -234, -234324, -234, "1234", "qwerqt", "pupupu", -148],
+               [1, "qwert", 148, "titi", 'q', "90", -3, 48, -234]), 10)
+]
+
+for func, args, idx in tasks:
+    print("\n", task_list[idx])
+    if isinstance(args, tuple):
+        func(*args)
+    else:
+        func(args)

@@ -4,135 +4,166 @@ class Time:
     MAX_SECONDS = 60
 
     def __init__(self, hours, minutes, seconds):
+        self._hours = None
+        self._minutes = None
+        self._seconds = None
+
         self.hours = hours
         self.minutes = minutes
         self.seconds = seconds
 
+    @property
+    def hours(self):
+        return self._hours
+
+    @hours.setter
+    def hours(self, value):
+        if 0 <= value < 24 :
+            self._hours = value
+        else:
+            raise ValueError(f"Значение {value} не входит в диапазон от 0 до 23")
+
+    @property
+    def minutes(self):
+        return self._minutes
+
+    @minutes.setter
+    def minutes(self, value):
+        if 0 <= value < 60 :
+            self._minutes = value
+        else:
+            raise ValueError(f"Значение {value} не входит в диапазон от 0 до 59")
+
+    @property
+    def seconds(self):
+        return self._seconds
+
+    @seconds.setter
+    def seconds(self, value):
+        if 0 <= value < 60 :
+            self._seconds = value
+        else:
+            raise ValueError(f"Значение {value} не входит в диапазон от 0 до 59")
+
+
+
     def __str__(self):
-        return f"time = {self.hours}:{self.minutes}:{self.seconds}"
+        return f"time = {self._hours}:{self._minutes}:{self._seconds}"
 
     # сравнение
     def __eq__ (self,other):        # ==
-        return self.hours == other.hour and self.minutes == other.minutes and self.seconds == other.seconds
+        return self._hours == other._hours and self._minutes == other._minutes and self._seconds == other._seconds
 
     def __lt__(self, other):        # <
-        if self.hours != other.hours:
-            return self.hours < other.hours
-        elif self.minutes != other.minutes:
-            return self.minutes < other.minutes
+        if self._hours != other._hours:
+            return self._hours < other._hours
+        elif self._minutes != other._minutes:
+            return self._minutes < other._minutes
         else:
-            return self.seconds < other.seconds
+            return self._seconds < other._seconds
 
     def __gt__(self, other):        # >
-        if self.hours != other.hours:
-            return self.hours > other.hours
-        elif self.minutes != other.minutes:
-            return self.minutes > other.minutes
+        if self._hours != other._hours:
+            return self._hours > other._hours
+        elif self._minutes != other._minutes:
+            return self._minutes > other._minutes
         else:
-            return self.seconds > other.seconds
+            return self._seconds > other._seconds
 
     # арифм операторы
     def __add__(self, other):       # +
-        result = Time(
-            self.hours + other.hours,
-            self.minutes + other.minutes,
-            self.seconds + other.seconds
-        )
+        h = self._hours - other._hours
+        m = self._minutes - other._minutes
+        s = self._seconds - other._seconds
 
-        if result.seconds >= Time.MAX_SECONDS:
-            result.minutes += result.seconds // Time.MAX_SECONDS
-            result.seconds = result.seconds % Time.MAX_SECONDS
+        if s > 59:
+            s -= 60
+            m += 1
 
-        if result.minutes >= Time.MAX_MINUTES:
-            result.hours += result.minutes // Time.MAX_MINUTES
-            result.minutes = result.minutes % Time.MAX_MINUTES
+        if m > 59:
+            m -= 60
+            h += 1
 
-        if result.hours >= Time.MAX_HOURS:
-            result.hours = result.hours % Time.MAX_HOURS
+        if h > 23:
+            h -= 24
 
-        return result
+        return Time(h, m, s)
 
-    def __sub__(self, other):       # -
-        result = Time(
-            self.hours - other.hours,
-            self.minutes - other.minutes,
-            self.seconds - other.seconds
-        )
+    def __sub__(self, other):
+        h = self._hours - other._hours
+        m = self._minutes - other._minutes
+        s = self._seconds - other._seconds
 
-        if result.seconds < 0:
-            result.minutes -= 1
-            result.seconds = Time.MAX_SECONDS + result.seconds
+        if s < 0:
+            s += 60
+            m -= 1
 
-        if result.minutes < 0:
-            result.hours -= 1
-            result.minutes = Time.MAX_MINUTES + result.minutes
+        if m < 0:
+            m += 60
+            h -= 1
 
-        if result.hours < 0:
-            result.hours = Time.MAX_HOURS + result.hours
+        if h < 0:
+            h += 24
 
-        return result
+        return Time(h, m, s)
 
-    def __mul__(self, other):       # умножение но я не знаю как ты хочешь что бы я реализовал, как есть
-        #или что бы переводилось в секунды а потом разбивалось
-        result = Time(
-            self.hours * other.hours,
-            self.minutes * other.minutes,
-            self.seconds * other.seconds
-        )
+    def __mul__(self, other):
+        h = self._hours * other._hours
+        m = self._minutes * other._minutes
+        s = self._seconds * other._seconds
 
-        if result.seconds >= Time.MAX_SECONDS:
-            result.minutes += result.seconds // Time.MAX_SECONDS
-            result.seconds = result.seconds % Time.MAX_SECONDS
+        if s >= 60:
+            m += s // 60
+            s = s % 60
 
-        if result.minutes >= Time.MAX_MINUTES:
-            result.hours += result.minutes // Time.MAX_MINUTES
-            result.minutes = result.minutes % Time.MAX_MINUTES
+        if m >= 60:
+            h += m // 60
+            m = m % 60
 
-        if result.hours >= Time.MAX_HOURS:
-            result.hours = result.hours % Time.MAX_HOURS
+        if h >= 24:
+            h = h % 24
 
-        return result
+        return Time(h, m, s)
 
     def __floordiv__(self, other):       # /
-        if other.hours == 0:
-            other.hours = 1
-        if other.minutes == 0:
-            other.minutes = 1
-        if other.seconds == 0:
-            other.seconds = 1
+        if other._hours == 0:
+            other._hours = 1
+        if other._minutes == 0:
+            other._minutes = 1
+        if other._seconds == 0:
+            other._seconds = 1
 
         result = Time(
-            self.hours // other.hours,
-            self.minutes // other.minutes,
-            self.seconds // other.seconds
+            self._hours // other._hours,
+            self._minutes // other._minutes,
+            self._seconds // other._seconds
         )
         return result
 
-
-            
-
 #тесты для вычитания
-# time1 = Time(15, 10, 15)
-# time2 = Time(12, 45, 50)
+time1 = Time(15, 10, 15)
+time2 = Time(12, 45, 50)
+print (time1 - time2)
 # ожидается time3 = 2:24:25
 
-# time1 = Time(10, 45, 30)
-# time2 = Time(5, 20, 10)
+time1 = Time(10, 45, 30)
+time2 = Time(5, 20, 10)
+print (time1 - time2)
 # ожидается time3 = 05:25:20
 
 #тесты для умножения
-# time1 = Time(12, 30, 30)
-# time2 = Time(2, 2, 2)
+time1 = Time(12, 30, 30)
+time2 = Time(2, 2, 2)
+print (time1 * time2)
 # ожидается time3 = 1:1:0
 
-# time1 = Time(0, 0, 30)
-# time2 = Time(0, 0, 2)
+time1 = Time(0, 0, 30)
+time2 = Time(0, 0, 2)
+print (time1 * time2)
 # ожидается time3 = 0:1:0
 
-time1 = Time(10, 5, 6)
-time2 = Time(3, 2, 3)
-
-
-time3 = time1 // time2
-print(time3)
-
+# time1 = Time(-1, 5, 6)
+# time2 = Time(3, 2, 3)
+#
+# time3 = time1 // time2
+# print(time3)

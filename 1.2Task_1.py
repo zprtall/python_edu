@@ -1,4 +1,4 @@
-class Point:
+class Point_X_Y:
 
     def __init__(self, x, y):
         self.x = x
@@ -8,10 +8,11 @@ class Point:
         return self.x < 0 or self.y < 0
 
     def __str__(self,):
-        return f"{self.x}, {self.y}"
+        return f"Точка имеет значеня -\nX: {self.x} \nY: {self.y}"
 
     def __sub__(self, other):
         return ((other.x - self.x) ** 2 + (other.y - self.y) ** 2) ** 0.5
+
 
 class Figure:
     def area(self):
@@ -88,7 +89,10 @@ class Triangle:
         s1, s2, s3 = self.sides()
         p = (s1 + s2 + s3)/2
         return (p * (p - s1) * (p - s2) * (p - s3)) **0.5
-
+point1 = Point(10, -5)
+point2 = Point(15, 0)
+print(point1)
+print(point2)
 triangle1 = Triangle(Point(1,2), Point(3,4), Point(-1, 8))
 print(triangle1.sides())
 

@@ -1,4 +1,4 @@
-class Point_X_Y:
+class Point:
 
     def __init__(self, x, y):
         self.x = x
@@ -13,8 +13,8 @@ class Point_X_Y:
     def __sub__(self, other):
         return ((other.x - self.x) ** 2 + (other.y - self.y) ** 2) ** 0.5
 
-point1 = Point_X_Y(10, -5)
-point2 = Point_X_Y(15, 0)
+point1 = Point(10, -5)
+point2 = Point(15, 0)
 print(point1)
 print(point2)
 

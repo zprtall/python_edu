@@ -18,10 +18,10 @@ class Time:
 
     @hours.setter
     def hours(self, value):
-        if 0 <= value < 24 :
-            self._hours = value
-        else:
+        if value < 0 or value > 23 :
             raise ValueError(f"Значение {value} не входит в диапазон от 0 до 23")
+        else:
+            self._hours = value
 
     @property
     def minutes(self):
@@ -29,10 +29,10 @@ class Time:
 
     @minutes.setter
     def minutes(self, value):
-        if 0 <= value < 60 :
-            self._minutes = value
-        else:
+        if value < 0 or value > 59 :
             raise ValueError(f"Значение {value} не входит в диапазон от 0 до 59")
+        else:
+            self._minutes = value
 
     @property
     def seconds(self):
@@ -40,10 +40,10 @@ class Time:
 
     @seconds.setter
     def seconds(self, value):
-        if 0 <= value < 60 :
-            self._seconds = value
-        else:
+        if value < 0 or value > 59:
             raise ValueError(f"Значение {value} не входит в диапазон от 0 до 59")
+        else:
+            self._seconds = value
 
 
 
@@ -126,17 +126,10 @@ class Time:
         return Time(h, m, s)
 
     def __floordiv__(self, other):       # /
-        if other._hours == 0:
-            other._hours = 1
-        if other._minutes == 0:
-            other._minutes = 1
-        if other._seconds == 0:
-            other._seconds = 1
-
         result = Time(
-            self._hours // other._hours,
-            self._minutes // other._minutes,
-            self._seconds // other._seconds
+            self._hours // (other._hours or 1),
+            self._minutes // (other._minutes or 1),
+            self._seconds // (other._seconds or 1)
         )
         return result
 

@@ -77,12 +77,8 @@ class Candidate(Person):
         super().__init__(surname, name, birth_date, gender, city)
         self.id = id
         self.job_title = job_title
-        self. status = status
+        self.status = status
         self.comments = comments
-
-    @property               # для изменения значения status ("Новый", "В обработке", "Резерв", "Нанят", "Отказ")
-    def status(self):
-        pass
 
     def __str__(self):      # красивый вывод инфы по условию
         pass
@@ -101,11 +97,6 @@ class Candidate_System:
     def remove_candidate(self):     # удалить кандидата из списка
         pass
 
-    def search(self,query):         # поиск по surname или job_title
-        pass
-
-    def filter_by_status(self, status):         # фильтрация по статусу
-        pass
 
     def save_data(self):            # сохранили в json файлик
         pass
@@ -116,10 +107,3 @@ class Candidate_System:
 class App:
     def main_loop(self):        # выборка пункта меню в while'e
         pass
-
-    # мб еще накину красивую обработку ошибок
-
-
-
-
-

@@ -4,77 +4,77 @@ class Time:
     MAX_SECONDS = 60
 
     def __init__(self, hours, minutes, seconds):
-        self._hours = None
-        self._minutes = None
-        self._seconds = None
+        self.hours = None
+        self.minutes = None
+        self.seconds = None
 
-        self.hours = hours
-        self.minutes = minutes
-        self.seconds = seconds
+        self.hours_set = hours
+        self.minutes_set = minutes
+        self.seconds_set = seconds
 
     @property
-    def hours(self):
-        return self._hours
+    def hours_set(self):
+        return self.hours
 
-    @hours.setter
-    def hours(self, value):
+    @hours_set.setter
+    def hours_set(self, value):
         if value < 0 or value > 23 :
             raise ValueError(f"Значение {value} не входит в диапазон от 0 до 23")
         else:
-            self._hours = value
+            self.hours = value
 
     @property
-    def minutes(self):
-        return self._minutes
+    def minutes_set(self):
+        return self.minutes
 
-    @minutes.setter
-    def minutes(self, value):
+    @minutes_set.setter
+    def minutes_set(self, value):
         if value < 0 or value > 59 :
             raise ValueError(f"Значение {value} не входит в диапазон от 0 до 59")
         else:
-            self._minutes = value
+            self.minutes = value
 
     @property
-    def seconds(self):
-        return self._seconds
+    def seconds_set(self):
+        return self.seconds
 
-    @seconds.setter
-    def seconds(self, value):
+    @seconds_set.setter
+    def seconds_set(self, value):
         if value < 0 or value > 59:
             raise ValueError(f"Значение {value} не входит в диапазон от 0 до 59")
         else:
-            self._seconds = value
+            self.seconds = value
 
 
 
     def __str__(self):
-        return f"time = {self._hours}:{self._minutes}:{self._seconds}"
+        return f"time = {self.hours}:{self.minutes}:{self.seconds}"
 
     # сравнение
     def __eq__ (self,other):        # ==
-        return self._hours == other._hours and self._minutes == other._minutes and self._seconds == other._seconds
+        return self.hours == other.hours and self.minutes == other.minutes and self.seconds == other.seconds
 
     def __lt__(self, other):        # <
-        if self._hours != other._hours:
-            return self._hours < other._hours
-        elif self._minutes != other._minutes:
-            return self._minutes < other._minutes
+        if self.hours != other.hours:
+            return self.hours < other.hours
+        elif self.minutes != other.minutes:
+            return self.minutes < other.minutes
         else:
-            return self._seconds < other._seconds
+            return self.seconds < other.seconds
 
     def __gt__(self, other):        # >
-        if self._hours != other._hours:
-            return self._hours > other._hours
-        elif self._minutes != other._minutes:
-            return self._minutes > other._minutes
+        if self.hours != other.hours:
+            return self.hours > other.hours
+        elif self.minutes != other.minutes:
+            return self.minutes > other.minutes
         else:
-            return self._seconds > other._seconds
+            return self.seconds > other.seconds
 
     # арифм операторы
     def __add__(self, other):       # +
-        h = self._hours - other._hours
-        m = self._minutes - other._minutes
-        s = self._seconds - other._seconds
+        h = self.hours - other.hours
+        m = self.minutes - other.minutes
+        s = self.seconds - other.seconds
 
         if s > 59:
             s -= 60
@@ -90,9 +90,9 @@ class Time:
         return Time(h, m, s)
 
     def __sub__(self, other):
-        h = self._hours - other._hours
-        m = self._minutes - other._minutes
-        s = self._seconds - other._seconds
+        h = self.hours - other.hours
+        m = self.minutes - other.minutes
+        s = self.seconds - other.seconds
 
         if s < 0:
             s += 60
@@ -108,9 +108,9 @@ class Time:
         return Time(h, m, s)
 
     def __mul__(self, other):
-        h = self._hours * other._hours
-        m = self._minutes * other._minutes
-        s = self._seconds * other._seconds
+        h = self.hours * other.hours
+        m = self.minutes * other.minutes
+        s = self.seconds * other.seconds
 
         if s >= 60:
             m += s // 60
@@ -127,9 +127,9 @@ class Time:
 
     def __floordiv__(self, other):       # /
         result = Time(
-            self._hours // (other._hours or 1),
-            self._minutes // (other._minutes or 1),
-            self._seconds // (other._seconds or 1)
+            self.hours // (other.hours or 1),
+            self.minutes // (other.minutes or 1),
+            self.seconds // (other.seconds or 1)
         )
         return result
 

@@ -1,0 +1,57 @@
+[
+    {
+        "id": 1,
+        "surname": "Ivanov",
+        "name": "Ivan",
+        "birth_date": "12:05:1998",
+        "gender": "m",
+        "city": "Moscow",
+        "job_title": "Python Developer",
+        "status": "Новый",
+        "comments": "Junior candidate, knows Django"
+    },
+    {
+        "id": 2,
+        "surname": "Petrov",
+        "name": "Alexey",
+        "birth_date": "03:11:1995",
+        "gender": "m",
+        "city": "Saint Petersburg",
+        "job_title": "Data Analyst",
+        "status": "В процессе",
+        "comments": "Knows SQL and Python, some experience in BI"
+    },
+    {
+        "id": 3,
+        "surname": "Sidorova",
+        "name": "Anna",
+        "birth_date": "27:06:2000",
+        "gender": "w",
+        "city": "Kazan",
+        "job_title": "Frontend Developer",
+        "status": "Новый",
+        "comments": "React, HTML, CSS, beginner level"
+    },
+    {
+        "id": 4,
+        "surname": "Smirnov",
+        "name": "Dmitry",
+        "birth_date": "15:09:1992",
+        "gender": "m",
+        "city": "Novosibirsk",
+        "job_title": "DevOps Engineer",
+        "status": "Принят",
+        "comments": "Docker, Linux, CI/CD pipelines"
+    },
+    {
+        "id": 5,
+        "surname": "Kuznetsova",
+        "name": "Elena",
+        "birth_date": "08:02:1997",
+        "gender": "w",
+        "city": "Yekaterinburg",
+        "job_title": "UX/UI Designer",
+        "status": "Отказ",
+        "comments": "Figma, user research, prototyping"
+    }
+]

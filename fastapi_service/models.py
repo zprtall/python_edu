@@ -8,7 +8,3 @@ class Struct(BaseModel):
     name: str
     created_at: datetime.date
     birth_date: datetime.date
-
-
-class PatchValue(BaseModel):
-    value: str

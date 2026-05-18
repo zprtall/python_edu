@@ -1,4 +1,4 @@
-from fastapi import HTTPException, APIRouter
+from fastapi import HTTPException, APIRouter, Query
 from fastapi import Body
 
 from models import Struct
@@ -31,13 +31,25 @@ def get_struct(struct_id: int):
 
 
 @router.get("/struct")
-def get_all_structs():
+def get_all_structs(
+        limit : int = Query(10, ge=1, le=100, description="number of elements"),
+        offset : int = Query(0, ge=0, le=100, description="quantity we skip")
+):
     if len(db) == 0:
         raise HTTPException(
             status_code=404,
             detail="No structures found"
         )
-    return db
+    struct_list = list(db.values())
+    paginated_struct = struct_list[offset:offset + limit]
+    total = len(db)
+    return {
+        "data": paginated_struct,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "next_offset": offset + limit if offset + limit < total else None
+    }
 
 
 @router.put("/struct/{struct_id}")

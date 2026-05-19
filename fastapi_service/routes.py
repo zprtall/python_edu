@@ -1,7 +1,6 @@
 from fastapi import HTTPException, APIRouter, Query
-from fastapi import Body
 
-from models import Struct
+from models import Struct, datetime
 from database import db
 
 router = APIRouter()
@@ -12,7 +11,7 @@ def create_struct(struct: Struct):
     new_id = 1
     while new_id in db:
         new_id += 1
-    db[new_id] = struct.dict()
+    db[new_id] = struct
     return {
         "message": "Struct created",
         "id": new_id,
@@ -32,8 +31,17 @@ def get_struct(struct_id: int):
 
 @router.get("/struct")
 def get_all_structs(
-        limit : int = Query(10, ge=1, le=100, description="number of elements"),
-        offset : int = Query(0, ge=0, le=100, description="quantity we skip")
+        limit : int = Query(ge=1, le=100, description="number of elements"),
+        offset : int = Query(ge=0, description="quantity we skip") | None,
+        min_tooth: int | None = None,
+        max_tooth: int | None = None,
+        min_higth : float | None = None,
+        max_higth : float | None = None,
+        name: str | None = None,
+        min_created_at : datetime.date | None = None,
+        max_created_at : datetime.date | None = None,
+        min_birth_at : datetime.date | None = None,
+        max_birth_at : datetime.date | None = None
 ):
     if len(db) == 0:
         raise HTTPException(
@@ -41,8 +49,51 @@ def get_all_structs(
             detail="No structures found"
         )
     struct_list = list(db.values())
+    if min_tooth is not None:
+        struct_list = [
+            s for s in struct_list
+            if s["number_of_tooth"] >= min_tooth
+        ]
+    if max_tooth is not None:
+        struct_list = [
+            s for s in struct_list
+            if s["number_of_tooth"] <= max_tooth
+        ]
+    if min_higth:
+        struct_list = [
+            s for s in struct_list
+            if s["hight"] >= min_higth
+        ]
+    if max_higth:
+        struct_list = [
+            s for s in struct_list
+            if s["hight"] <= max_higth
+        ]
+    if name:
+        struct_list = [s for s in struct_list if s["name"] == name]
+    if min_created_at:
+        struct_list = [
+            s for s in struct_list
+            if s["created_at"] >= min_created_at
+        ]
+    if max_created_at:
+        struct_list = [
+            s for s in struct_list
+            if s["created_at"] <= max_created_at
+        ]
+    if min_birth_at:
+        struct_list = [
+            s for s in struct_list
+            if s["birth_at"] >= min_birth_at
+        ]
+    if max_birth_at:
+        struct_list = [
+            s for s in struct_list
+            if s["birth_at"] <= max_birth_at
+        ]
+
+    total = len(struct_list)
     paginated_struct = struct_list[offset:offset + limit]
-    total = len(db)
     return {
         "data": paginated_struct,
         "total": total,
@@ -59,7 +110,7 @@ def put_struct(struct_id: int, struct: Struct):
             status_code=404,
             detail="Struct not found"
         )
-    db[struct_id] = struct.dict()
+    db[struct_id] = struct
     return {
         "message": "Structure updated",
         "data": db[struct_id]
@@ -67,29 +118,30 @@ def put_struct(struct_id: int, struct: Struct):
 
 
 @router.patch("/struct/{struct_id}")
-def patch_struct(struct_id: int, update_data: dict = Body(...)):
+def patch_struct(struct_id: int, update_data: dict):
     if struct_id not in db:
         raise HTTPException(
             status_code=404,
             detail="Struct not found"
         )
+    struct_obj = db[struct_id]
+    struct_dict = struct_obj.dict()
     for field, value in update_data.items():
-        if field not in db[struct_id]:
+        if field not in struct_dict:
             raise HTTPException(
                 status_code=400,
-                detail = f"Field '{field}' does not exist"
+                detail=f"Field '{field}' does not exist"
             )
-        if not isinstance(db[struct_id][field], type(value)):
+        if not isinstance(value, type(struct_dict[field])):
             raise HTTPException(
                 status_code=400,
                 detail=f"Field '{field}' has wrong type"
             )
-        db[struct_id][field] = value
+        setattr(struct_obj, field, value)
     return {
         "message": "Structure changed",
-        "data": db[struct_id]
+        "data": struct_obj
     }
-
 
 @router.delete("/struct/{struct_id}")
 def delete_struct(struct_id: int):

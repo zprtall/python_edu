@@ -33,7 +33,10 @@ def get_struct(struct_id: int):
 @router.get("/struct")
 def get_all_structs(
         limit : int = Query(10, ge=1, le=100, description="number of elements"),
-        offset : int = Query(0, ge=0, le=100, description="quantity we skip")
+        offset : int = Query(0, ge=0, description="quantity we skip"),
+        name: str | None = None,
+        min_tooth: int | None = None,
+        max_tooth: int | None = None
 ):
     if len(db) == 0:
         raise HTTPException(
@@ -41,8 +44,21 @@ def get_all_structs(
             detail="No structures found"
         )
     struct_list = list(db.values())
+    if name:
+        struct_list = [s for s in struct_list if s["name"] == name]
+    if min_tooth is not None:
+        struct_list = [
+            s for s in struct_list
+            if s["number_of_tooth"] >= min_tooth
+        ]
+    if max_tooth is not None:
+        struct_list = [
+            s for s in struct_list
+            if s["number_of_tooth"] <= max_tooth
+        ]
+
+    total = len(struct_list)
     paginated_struct = struct_list[offset:offset + limit]
-    total = len(db)
     return {
         "data": paginated_struct,
         "total": total,

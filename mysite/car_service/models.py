@@ -1,5 +1,9 @@
+from random import choices
+
 from django.db import models
-from pydantic.v1 import ValidationError
+from django.core.exceptions import ValidationError
+from phone_field import PhoneField
+from django.core.validators import MaxValueValidator
 
 
 class Company(models.Model):
@@ -7,7 +11,8 @@ class Company(models.Model):
                             verbose_name="Название")
     legal_address = models.CharField(max_length=100,
                                     verbose_name="юр Адрес")
-    UNP = models.CharField(max_length=9,
+    unp = models.CharField(max_length=9,
+                           unique=True,
                            verbose_name="УНП")
 
     def __str__(self):
@@ -22,9 +27,15 @@ class Workshop(models.Model):
 
     )
     address = models.CharField(max_length=100,
-                               verbose_name="Адресс мастерской")
-    capacity = models.IntegerField(verbose_name="Вмещаемость мастерской")
-    parking_space = models.IntegerField(verbose_name="Количество места на стоянке")
+                               verbose_name="Адрес мастерской")
+    capacity = models.PositiveSmallIntegerField(
+        validators=[MaxValueValidator(5)],
+        verbose_name="Вмещаемость мастерской"
+    )
+    parking_space = models.PositiveSmallIntegerField(
+        validators=[MaxValueValidator(60)],
+        verbose_name="Количество места на стоянке"
+    )
 
 class Worker(models.Model):
 
@@ -38,16 +49,19 @@ class Worker(models.Model):
         related_name="workers",
         verbose_name="Мастерская"
     )
-    full_name = models.CharField(max_length=50,
-                                verbose_name="ФИО")
-    position = models.CharField(max_length=20,
+    first_name = models.CharField(max_length=50,
+                                  verbose_name="Имя")
+    last_name = models.CharField(max_length=50,
+                            verbose_name="Фамилия")
+    dad_name = models.CharField(max_length=50,
+                                verbose_name="Отчество")
+    position = models.CharField(max_length=8,
                             choices=Position.choices,
                             verbose_name="Должность")
     hourly_rate = models.FloatField(null=True,
                                     blank=True,
                                     verbose_name="часовая ставка")
-    phone = models.CharField(max_length=20,
-                             verbose_name="номер телефона")
+    phone = PhoneField(verbose_name="номер телефона")
 
     @property
     def is_mechanic(self):
@@ -64,42 +78,44 @@ class Worker(models.Model):
             raise ValidationError("Администратору ставка не нужна")
 
 class Order(models.Model):
-    type_work = models.CharField(max_length=200,
-                                 verbose_name="Тип работы")
-    worker_name = models.ForeignKey(Worker,
+    class TypeWork(models.TextChoices):
+        WHEELS = "wheels", "колёса"
+        PAINTWORK = "paintwork", "покраска"
+        ENGINE = "engine", "двигатель"
+        ELECTRICAL_SYSTEM = "electrical_system", "электросистема"
+        SUSPENSION = "suspension", "подвеска"
+    type_work = models.CharField(max_length=18,
+                                choices = TypeWork.choices,
+                                verbose_name="Тип работы")
+    worker = models.ForeignKey(Worker,
                                     on_delete=models.CASCADE,
                                     related_name="order_as_worker",
                                     verbose_name="Работник")
-    admin_name = models.ForeignKey(Worker,
+    admin = models.ForeignKey(Worker,
                                    on_delete=models.CASCADE,
                                    related_name="order_as_admin",
                                    verbose_name="Админ")
-    receipt_time = models.DateTimeField(verbose_name="Время поступления авто")
-    start_time = models.DateTimeField(verbose_name="Время начала работы")
-    end_time = models.DateTimeField(verbose_name="Время окончания работ")
-    time_of_delivery = models.DateTimeField(verbose_name="Время принятия работ")
+    arrival_time = models.DateTimeField(verbose_name="Время поступления авто")
+    work_start_time = models.DateTimeField(verbose_name="Время начала работы")
+    work_end_time = models.DateTimeField(verbose_name="Время окончания работ")
+    delivery_acceptance_time = models.DateTimeField(verbose_name="Время принятия работ")
     price = models.FloatField(verbose_name="Цена работ")
     car_number = models.CharField(max_length= 8,
                                   verbose_name="Номер авто")
-    name_car = models.CharField(max_length=50,
+    car_name = models.CharField(max_length=50,
                                 verbose_name=" Марка и модель авто")
     comments = models.CharField(max_length=200,
                                 blank=True,
                                 verbose_name="Коментарии")
 
     def clean(self):
-        if not self.worker_name.is_mechanic:
+        if not self.worker.is_mechanic:
             raise ValidationError("Выполнителем работ может быть только механик")
-
-        if not self.admin_name.is_admin:
+        if not self.admin.is_admin:
             raise ValidationError("Проверяющим может быть только администратор")
-
-            # время
-        if self.receipt_time > self.start_time:
+        if self.arrival_time > self.work_start_time:
             raise ValidationError("Принятие авто не может быть позже начала работ")
-
-        if self.start_time > self.end_time:
+        if self.work_start_time > self.work_end_time:
             raise ValidationError("Начало работ не может быть позже окончания")
-
-        if self.end_time > self.time_of_delivery:
+        if self.work_end_time > self.delivery_acceptance_time:
             raise ValidationError("Окончание работ не может быть позже сдачи авто")

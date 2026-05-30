@@ -36,6 +36,8 @@ class Workshop(models.Model):
         validators=[MaxValueValidator(60)],
         verbose_name="Количество места на стоянке"
     )
+    occupied_workshop_spaces = models.SmallIntegerField(verbose_name="занятые места в мастерской")
+    occupied_parking_spaces = models.SmallIntegerField(verbose_name="занятые места на парковке")
 
 class Worker(models.Model):
 
@@ -76,6 +78,8 @@ class Worker(models.Model):
             raise ValidationError("У механика должна быть указана ставка")
         if self.position == self.Position.ADMIN and self.hourly_rate:
             raise ValidationError("Администратору ставка не нужна")
+        if self.position == self.Position.ADMIN and self.hourly_rate:
+            raise ValidationError("У администратора нет почасовой ставки")
 
 class Order(models.Model):
     class TypeWork(models.TextChoices):
@@ -84,6 +88,11 @@ class Order(models.Model):
         ENGINE = "engine", "двигатель"
         ELECTRICAL_SYSTEM = "electrical_system", "электросистема"
         SUSPENSION = "suspension", "подвеска"
+        OTHER = "other", "прочее"
+    class Spaces(models.TextChoices):
+        PARKING = "parking", "стоянка"
+        BOX = "box", "рабочее пространство"
+        OWNER = "owner", "уехала к владельцу"
     type_work = models.CharField(max_length=18,
                                 choices = TypeWork.choices,
                                 verbose_name="Тип работы")
@@ -96,9 +105,9 @@ class Order(models.Model):
                                    related_name="order_as_admin",
                                    verbose_name="Админ")
     arrival_time = models.DateTimeField(verbose_name="Время поступления авто")
-    work_start_time = models.DateTimeField(verbose_name="Время начала работы")
-    work_end_time = models.DateTimeField(verbose_name="Время окончания работ")
-    delivery_acceptance_time = models.DateTimeField(verbose_name="Время принятия работ")
+    work_start_time = models.DateTimeField(verbose_name="Время начала работы", null=True)
+    work_end_time = models.DateTimeField(verbose_name="Время окончания работ", null=True)
+    delivery_acceptance_time = models.DateTimeField(verbose_name="Время принятия работ", null=True)
     price = models.FloatField(verbose_name="Цена работ")
     car_number = models.CharField(max_length= 8,
                                   verbose_name="Номер авто")
@@ -107,15 +116,69 @@ class Order(models.Model):
     comments = models.CharField(max_length=200,
                                 blank=True,
                                 verbose_name="Коментарии")
+    finding = models.CharField(max_length=20,
+                               choices = Spaces.choices,
+                               verbose_name="Местонахождение")
+
+    def save(self, *args, **kwargs):
+        workshop = self.worker.workshop
+        if self.pk:
+            old = Order.objects.get(pk=self.pk)
+            old_finding = old.finding
+        else:
+            old_finding = None
+        if self.delivery_acceptance_time is not None:
+            new_finding = self.Spaces.OWNER
+        elif self.work_start_time is None:
+            new_finding = self.Spaces.PARKING
+        elif self.work_end_time is None:
+            new_finding = self.Spaces.BOX
+        else:
+            new_finding = self.Spaces.PARKING
+        self.finding = new_finding
+
+        if old_finding == self.Spaces.BOX:
+            workshop.occupied_workshop_spaces -= 1
+        elif old_finding == self.Spaces.PARKING:
+            workshop.occupied_parking_spaces -= 1
+
+        if new_finding == self.Spaces.BOX:
+            workshop.occupied_workshop_spaces += 1
+        elif new_finding == self.Spaces.PARKING:
+            workshop.occupied_parking_spaces += 1
+
+        workshop.occupied_workshop_spaces = max(0, workshop.occupied_workshop_spaces)
+        workshop.occupied_parking_spaces = max(0, workshop.occupied_parking_spaces)
+
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def clean(self):
-        if not self.worker.is_mechanic:
+        workshop = self.worker.workshop
+        if self.worker and not self.worker.is_mechanic:
             raise ValidationError("Выполнителем работ может быть только механик")
-        if not self.admin.is_admin:
+        if self.admin and not self.admin.is_admin:
             raise ValidationError("Проверяющим может быть только администратор")
-        if self.arrival_time > self.work_start_time:
-            raise ValidationError("Принятие авто не может быть позже начала работ")
-        if self.work_start_time > self.work_end_time:
-            raise ValidationError("Начало работ не может быть позже окончания")
-        if self.work_end_time > self.delivery_acceptance_time:
-            raise ValidationError("Окончание работ не может быть позже сдачи авто")
+        if self.work_start_time and self.arrival_time > self.work_start_time:
+            raise ValidationError("Начало работ не может быть раньше поступления авто")
+        if self.work_start_time and self.work_end_time:
+            if self.work_start_time > self.work_end_time:
+                raise ValidationError("Окончание не может быть раньше начала")
+        if self.work_end_time and self.delivery_acceptance_time:
+            if self.work_end_time > self.delivery_acceptance_time:
+                raise ValidationError("Сдача не может быть раньше окончания работ")
+        if self.work_end_time and not self.work_start_time:
+            raise ValidationError("Нельзя закончить работу, не начав её")
+        if self.delivery_acceptance_time and (
+                not self.work_start_time or not self.work_end_time
+        ):
+            raise ValidationError("Сдача невозможна без начала и окончания работ")
+        if self.type_work.lower() == self.TypeWork.OTHER and not self.comments:
+            raise ValidationError("Для типа 'Прочее' необходимо указать комментарий")
+        if workshop.occupied_workshop_spaces > workshop.capacity:
+            raise ValidationError("В мастерской нет места")
+        if workshop.occupied_parking_spaces > workshop.parking_space:
+            raise ValidationError("На парковске нет места")
+
+
+

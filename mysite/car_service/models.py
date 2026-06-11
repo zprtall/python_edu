@@ -100,10 +100,21 @@ class Order(models.Model):
                                    on_delete=models.CASCADE,
                                    related_name="order_as_admin",
                                    verbose_name="Админ")
-    arrival_time = models.DateTimeField(verbose_name="Время поступления авто", )
-    work_start_time = models.DateTimeField(default= None, verbose_name="Время начала работы", null=True, blank=True)
-    work_end_time = models.DateTimeField(default= None,verbose_name="Время окончания работ", null=True, blank=True)
-    delivery_acceptance_time = models.DateTimeField(default= None,verbose_name="Время принятия работ", null=True, blank=True)
+    arrival_time = models.DateTimeField(verbose_name="Время поступления авто")
+    work_start_time = models.DateTimeField(default= None,
+                                           editable= False,
+                                           verbose_name="Время начала работы",
+                                           null=True, blank=True)
+    work_end_time = models.DateTimeField(default= None,
+                                         editable= False,
+                                         verbose_name="Время окончания работ",
+                                         null=True,
+                                         blank=True)
+    delivery_acceptance_time = models.DateTimeField(default= None,
+                                                    editable= False,
+                                                    verbose_name="Время принятия работ",
+                                                    null=True,
+                                                    blank=True)
     price = models.FloatField(verbose_name="Цена работ")
     car_number = models.CharField(max_length= 8,
                                   verbose_name="Номер авто")
